@@ -1,0 +1,34 @@
+jdl
+entity Transaction {
+  date LocalDate required min(1900-01-01) max(today),
+  amount BigDecimal required min(0.01),
+  description String maxlength(255)
+}
+
+entity Category {
+  name String required maxlength(50) unique
+  isIncome Boolean required
+}
+
+enum TransactionType {
+  INCOME,
+  EXPENSE
+}
+
+relationship ManyToOne {
+  Transaction{category required} to Category
+}
+
+relationship ManyToOne {
+  Transaction{user(login)} to User with builtInEntity
+}
+
+relationship OneToMany {
+  Category{transaction} to Transaction
+}
+
+service Transaction, Category with serviceClass
+
+paginate Transaction, Category with pagination
+
+dto Transaction, Category with mapstruct
