@@ -22,32 +22,37 @@ This guide will help you run the Personal Budget Tracker application using Docke
    docker-compose up -d
    ```
 
+   This will:
+   - Build the application from source
+   - Start MySQL database
+   - Start the application
+   - Make it available at http://localhost:8080
+
 3. **Access the application**:
    - Web application: http://localhost:8080
    - API documentation: http://localhost:8080/swagger-ui/index.html
    - Database: localhost:3306 (MySQL)
 
-## Alternative: Build from Source
+## Building from Source
 
-If you want to build the Docker image locally instead of pulling from Docker Hub:
+The application is automatically built from source when you run `docker-compose up -d`. The build process:
 
-1. **Build the image**:
+1. Uses Maven to compile the Java application
+2. Builds the React frontend
+3. Creates a production-ready JAR file
+4. Packages everything into a Docker image
 
-   ```bash
-   npm run java:docker
-   ```
+### Manual Build (if needed)
 
-2. **Update the docker-compose.yml** to use the local image:
+If you want to build manually:
 
-   ```yaml
-   app:
-     image: personalbudgettracker:latest
-   ```
+```bash
+# Build the application
+npm run java:docker
 
-3. **Run the application**:
-   ```bash
-   docker-compose up -d
-   ```
+# Run with docker-compose
+docker-compose up -d
+```
 
 ## Useful Commands
 
@@ -57,6 +62,7 @@ If you want to build the Docker image locally instead of pulling from Docker Hub
 - **View logs for specific service**: `docker-compose logs -f app`
 - **Restart a service**: `docker-compose restart app`
 - **Remove everything (including data)**: `docker-compose down -v`
+- **Rebuild the application**: `docker-compose up -d --build`
 
 ## Development Mode
 
@@ -107,6 +113,17 @@ docker-compose logs mysql
 docker-compose restart
 ```
 
+### Build Issues
+
+If the build fails:
+
+```bash
+# Clean and rebuild
+docker-compose down
+docker system prune -f
+docker-compose up -d --build
+```
+
 ### Out of Disk Space
 
 If you encounter disk space issues:
@@ -124,28 +141,24 @@ You can customize the application by setting environment variables in the `docke
 - `_JAVA_OPTIONS`: Adjust JVM memory settings
 - `MYSQL_DATABASE`: Change the database name
 
-## Team Sharing Options
+## Team Collaboration
 
-### Option 1: Docker Hub (Recommended)
+### For New Team Members
 
-1. Push the image to Docker Hub
-2. Share the `docker-compose.yml` file
-3. Team members pull and run
+1. Clone the repository
+2. Ensure Docker Desktop is running
+3. Run `docker-compose up -d`
+4. Access the application at http://localhost:8080
 
-### Option 2: Private Registry
+### Sharing Changes
 
-1. Set up a private Docker registry
-2. Push images there
-3. Team members pull from private registry
+1. Commit your changes to Git
+2. Push to the repository
+3. Team members pull the latest changes
+4. Run `docker-compose up -d --build` to rebuild with changes
 
-### Option 3: Image Export/Import
+### Database Data
 
-1. Export the image: `docker save personalbudgettracker > app.tar`
-2. Share the tar file
-3. Team members import: `docker load < app.tar`
-
-### Option 4: Source Code Only
-
-1. Share the source code
-2. Team members build locally using `npm run java:docker`
-3. Run with `docker-compose up -d`
+- Database data is persisted in a Docker volume
+- To reset data: `docker-compose down -v && docker-compose up -d`
+- To backup data: `docker exec personal-budget-tracker-mysql-1 mysqldump -u root personalbudgettracker > backup.sql`
