@@ -1,7 +1,5 @@
 # Personal Budget Tracker - Docker Setup
 
-Simple step-by-step guide to run the application with Docker.
-
 ## Prerequisites
 
 - Docker installed
@@ -27,7 +25,6 @@ docker-compose -f src/main/docker/app.yml up
 ## Access the Application
 
 - **Application**: http://localhost:8080
-- **Default login**: admin / admin
 
 ## Stop the Application
 ```bash
